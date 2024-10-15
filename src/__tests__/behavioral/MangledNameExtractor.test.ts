@@ -1,4 +1,8 @@
-import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
+import AbstractSpruceTest, {
+    test,
+    assert,
+    errorAssert,
+} from '@sprucelabs/test-utils'
 import MangledNameExtractorImpl, {
     MangledNameExtractor,
 } from '../../MangledNameExtractor'
@@ -14,6 +18,18 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
     @test()
     protected static async canCreateMangledNameExtractor() {
         assert.isTruthy(this.instance)
+    }
+
+    @test()
+    protected static async throwsWithMissingRequiredParams() {
+        const err = assert.doesThrow(() => {
+            // @ts-ignore
+            this.instance.extract()
+        })
+
+        errorAssert.assertError(err, 'MISSING_PARAMETERS', {
+            parameters: ['libPath', 'unmangledNames'],
+        })
     }
 
     private static MangledNameExtractor() {
