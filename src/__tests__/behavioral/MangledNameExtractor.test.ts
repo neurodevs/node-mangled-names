@@ -91,6 +91,26 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         assert.isEqualDeep(result, expected)
     }
 
+    @test()
+    protected static async worksWithMultipleUnmangledNames() {
+        const unmangledNames = Array.from({ length: 3 }, () => generateId())
+        const fakeStdout = this.generateFakeStdoutByNames(unmangledNames)
+
+        this.setFakeExecPromise({ stdout: fakeStdout })
+
+        const result = await this.instance.extract(this.libPath, unmangledNames)
+
+        const lines = fakeStdout.split('\n')
+
+        const expected = {
+            [unmangledNames[0]]: lines[0],
+            [unmangledNames[1]]: lines[1],
+            [unmangledNames[2]]: lines[2],
+        }
+
+        assert.isEqualDeep(result, expected)
+    }
+
     private static generateNumFakeStdout(numMangledNames = 1) {
         return Array.from({ length: numMangledNames }, () => {
             const fakeUnmangledName = generateId()

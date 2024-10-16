@@ -26,13 +26,23 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         this.unmangledNames = unmangledNames
 
         const symbols = await this.loadSymbols()
-        const lines = symbols.split('\n')
 
-        return {
-            [this.unmangledNames[0]]: lines.filter((line) =>
-                line.includes(this.unmangledNames[0])
-            )[0],
-        } as MangledNameMap
+        return this.extractMangledNames(symbols)
+    }
+
+    private extractMangledNames(symbols: string) {
+        const lines = symbols.split('\n')
+        const map: MangledNameMap = {}
+
+        for (const unmangledName of this.unmangledNames) {
+            for (const line of lines) {
+                if (line.includes(unmangledName)) {
+                    map[unmangledName] = line
+                }
+            }
+        }
+
+        return map
     }
 
     private async loadSymbols() {
@@ -62,7 +72,7 @@ export interface MangledNameExtractor {
 
 export type MangledNameExtractorConstructor = new () => MangledNameExtractor
 
-export interface MangledNameMap {}
+export type MangledNameMap = Record<string, string>
 
 export interface PromisifyResult {
     stdout: string
