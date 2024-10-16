@@ -25,7 +25,14 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         this.libPath = libPath
         this.unmangledNames = unmangledNames
 
-        return await this.loadSymbols()
+        const symbols = await this.loadSymbols()
+        const lines = symbols.split('\n')
+
+        return {
+            [this.unmangledNames[0]]: lines.filter((line) =>
+                line.includes(this.unmangledNames[0])
+            )[0],
+        } as MangledNameMap
     }
 
     private async loadSymbols() {
@@ -41,7 +48,7 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
             })
         }
 
-        return { [this.unmangledNames[0]]: stdout }
+        return stdout
     }
 
     private get execPromise() {
