@@ -48,3 +48,8 @@ export interface MangledNameExtractor {
 }
 
 export type MangledNameExtractorConstructor = new () => MangledNameExtractor
+
+export interface PromisifyResult {
+    stdout: string
+    stderr: string
+}

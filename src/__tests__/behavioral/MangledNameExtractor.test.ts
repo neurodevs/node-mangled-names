@@ -6,6 +6,7 @@ import AbstractSpruceTest, {
 } from '@sprucelabs/test-utils'
 import MangledNameExtractorImpl, {
     MangledNameExtractor,
+    PromisifyResult,
 } from '../../MangledNameExtractor'
 
 export default class MangledNameExtractorTest extends AbstractSpruceTest {
@@ -50,7 +51,7 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
     @test()
     protected static async throwsIfExecFails() {
         const fakeError = 'Fake error!'
-        this.setFakeExecPromise(fakeError)
+        this.setFakeExecPromise({ stderr: fakeError })
 
         const err = await assert.doesThrowAsync(async () => {
             await this.extract()
@@ -62,15 +63,16 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         })
     }
 
-    private static setFakeExecPromise(stdError?: string) {
+    private static setFakeExecPromise(options?: Partial<PromisifyResult>) {
         // @ts-ignore
         MangledNameExtractorImpl.execPromise = async () => {
-            return this.generateFakeExecReponse(stdError)
+            return this.generateFakeExecReponse(options)
         }
     }
 
-    private static generateFakeExecReponse(stderr?: string) {
-        return { stderr: stderr ?? '' }
+    private static generateFakeExecReponse(options?: Partial<PromisifyResult>) {
+        const { stdout = '', stderr = '' } = options ?? {}
+        return { stdout, stderr }
     }
 
     private static async extract() {
