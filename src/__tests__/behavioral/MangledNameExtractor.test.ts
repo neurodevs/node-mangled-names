@@ -62,14 +62,21 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
             originalError: fakeError,
         })
     }
-    @test()
-    protected static async returnsWithExpectedResult() {
-        const fakeMangledName = `${generateId()}${this.unmangledName}${generateId()}`
 
-        this.setFakeExecPromise({ stdout: fakeMangledName })
+    @test()
+    protected static async returnsExpectedResultWithOneMangledName() {
+        const fakeStdout = this.generateFakeStdout()
+        this.setFakeExecPromise({ stdout: fakeStdout })
 
         const result = await this.extract()
-        assert.isEqualDeep(result, { [this.unmangledName]: fakeMangledName })
+        assert.isEqualDeep(result, { [this.unmangledName]: fakeStdout })
+    }
+
+    private static generateFakeStdout(numMangledNames = 1) {
+        return Array.from({ length: numMangledNames }, () => {
+            const fakeUnmangledName = generateId()
+            return this.generateFakeMangledName(fakeUnmangledName)
+        }).join('\n')
     }
 
     private static setFakeExecPromise(options?: Partial<PromisifyResult>) {
@@ -82,6 +89,10 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
     private static generateFakeExecReponse(options?: Partial<PromisifyResult>) {
         const { stdout = '', stderr = '' } = options ?? {}
         return { stdout, stderr }
+    }
+
+    private static generateFakeMangledName(unmangledName = this.unmangledName) {
+        return `${generateId()}${unmangledName}${generateId()}`
     }
 
     private static async extract() {
