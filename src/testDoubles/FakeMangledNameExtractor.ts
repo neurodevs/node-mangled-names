@@ -1,9 +1,9 @@
 import { MangledNameExtractor, MangledNameMap } from '../MangledNameExtractor'
 
 export default class FakeMangledNameExtractor implements MangledNameExtractor {
-    public static fakeResult: MangledNameMap = {}
-    public static extractCalls: FakeExtractCall[] = []
     public static numConstructorCalls = 0
+    public static extractCalls: FakeExtractCall[] = []
+    public static fakeResult: MangledNameMap = {}
 
     public constructor() {
         FakeMangledNameExtractor.numConstructorCalls++
@@ -17,17 +17,18 @@ export default class FakeMangledNameExtractor implements MangledNameExtractor {
         return this.fakeResult
     }
 
-    private get fakeResult() {
-        return FakeMangledNameExtractor.fakeResult
-    }
-
     private get extractCalls() {
         return FakeMangledNameExtractor.extractCalls
+    }
+
+    private get fakeResult() {
+        return FakeMangledNameExtractor.fakeResult
     }
 
     public static clearTestDouble() {
         FakeMangledNameExtractor.fakeResult = {}
         FakeMangledNameExtractor.extractCalls = []
+        FakeMangledNameExtractor.numConstructorCalls = 0
     }
 }
 
