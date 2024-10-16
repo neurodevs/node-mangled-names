@@ -40,14 +40,41 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         // @ts-ignore
         MangledNameExtractorImpl.execPromise = async (cmd: string) => {
             passedCmd = cmd
+            return this.generateFakeExecReponse()
         }
 
         await this.extract()
         assert.isEqual(passedCmd, `nm -g ${this.libPath}`)
     }
 
+    @test()
+    protected static async throwsIfExecFails() {
+        const fakeError = 'Fake error!'
+        this.setFakeExecPromise(fakeError)
+
+        const err = await assert.doesThrowAsync(async () => {
+            await this.extract()
+        })
+
+        errorAssert.assertError(err, 'LOAD_SYMBOLS_FAILED', {
+            libPath: this.libPath,
+            originalError: fakeError,
+        })
+    }
+
+    private static setFakeExecPromise(stdError?: string) {
+        // @ts-ignore
+        MangledNameExtractorImpl.execPromise = async () => {
+            return this.generateFakeExecReponse(stdError)
+        }
+    }
+
+    private static generateFakeExecReponse(stderr?: string) {
+        return { stderr: stderr ?? '' }
+    }
+
     private static async extract() {
-        await this.instance.extract(this.libPath, this.unmangledNames)
+        return await this.instance.extract(this.libPath, this.unmangledNames)
     }
 
     private static readonly libPath = generateId()

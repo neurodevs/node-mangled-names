@@ -1,10 +1,13 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { assertOptions } from '@sprucelabs/schema'
+import SpruceError from './errors/SpruceError'
 
 export default class MangledNameExtractorImpl implements MangledNameExtractor {
     public static Class?: MangledNameExtractorConstructor
     public static execPromise = promisify(exec)
+
+    private libPath!: string
 
     protected constructor() {}
 
@@ -18,7 +21,21 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
             'unmangledNames',
         ])
 
-        await this.execPromise(`nm -g ${libPath}`)
+        this.libPath = libPath
+
+        await this.loadSymbols()
+    }
+
+    private async loadSymbols() {
+        const { stderr } = await this.execPromise(`nm -g ${this.libPath}`)
+
+        if (stderr) {
+            throw new SpruceError({
+                code: 'LOAD_SYMBOLS_FAILED',
+                libPath: this.libPath,
+                originalError: stderr as unknown as Error,
+            })
+        }
     }
 
     private get execPromise() {
