@@ -8,6 +8,7 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
     public static execPromise = promisify(exec)
 
     private libPath!: string
+    private unmangledNames!: string[]
 
     protected constructor() {}
 
@@ -22,12 +23,15 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         ])
 
         this.libPath = libPath
+        this.unmangledNames = unmangledNames
 
-        await this.loadSymbols()
+        return await this.loadSymbols()
     }
 
     private async loadSymbols() {
-        const { stderr } = await this.execPromise(`nm -g ${this.libPath}`)
+        const { stdout, stderr } = await this.execPromise(
+            `nm -g ${this.libPath}`
+        )
 
         if (stderr) {
             throw new SpruceError({
@@ -36,6 +40,8 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
                 originalError: stderr as unknown as Error,
             })
         }
+
+        return { [this.unmangledNames[0]]: stdout }
     }
 
     private get execPromise() {
@@ -44,10 +50,12 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
 }
 
 export interface MangledNameExtractor {
-    extract(libPath: string, unmangledNames: string[]): Promise<void>
+    extract(libPath: string, unmangledNames: string[]): Promise<MangledNameMap>
 }
 
 export type MangledNameExtractorConstructor = new () => MangledNameExtractor
+
+export interface MangledNameMap {}
 
 export interface PromisifyResult {
     stdout: string

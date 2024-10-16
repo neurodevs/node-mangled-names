@@ -62,6 +62,15 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
             originalError: fakeError,
         })
     }
+    @test()
+    protected static async returnsWithExpectedResult() {
+        const fakeMangledName = `${generateId()}${this.unmangledName}${generateId()}`
+
+        this.setFakeExecPromise({ stdout: fakeMangledName })
+
+        const result = await this.extract()
+        assert.isEqualDeep(result, { [this.unmangledName]: fakeMangledName })
+    }
 
     private static setFakeExecPromise(options?: Partial<PromisifyResult>) {
         // @ts-ignore
@@ -77,6 +86,10 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
 
     private static async extract() {
         return await this.instance.extract(this.libPath, this.unmangledNames)
+    }
+
+    private static get unmangledName() {
+        return this.unmangledNames[0]
     }
 
     private static readonly libPath = generateId()
