@@ -37,7 +37,11 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         for (const unmangledName of this.unmangledNames) {
             for (const line of lines) {
                 if (line.includes(unmangledName)) {
-                    map[unmangledName] = line
+                    const symbolEntries = line.split(' ')
+
+                    if (symbolEntries.length > 0) {
+                        map[unmangledName] = symbolEntries.pop() as string
+                    }
                 }
             }
         }

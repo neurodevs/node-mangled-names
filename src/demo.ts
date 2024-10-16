@@ -5,7 +5,7 @@ async function run() {
 
     const result = await instance.extract(
         '/usr/local/lib/libxdf/libxdf.dylib',
-        ['unmangledNames']
+        ['load_xdf']
     )
 
     console.log(result)

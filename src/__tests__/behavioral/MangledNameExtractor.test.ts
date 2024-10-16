@@ -111,6 +111,16 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         assert.isEqualDeep(result, expected)
     }
 
+    @test()
+    protected static async worksWithDelimiterForSymbolType() {
+        const fakeStdoutWithDelimiter = `${generateId()} T ${this.mangledName}`
+        this.setFakeExecPromise({ stdout: fakeStdoutWithDelimiter })
+
+        const result = await this.extract()
+
+        assert.isEqualDeep(result, { [this.unmangledName]: this.mangledName })
+    }
+
     private static generateNumFakeStdout(numMangledNames = 1) {
         return Array.from({ length: numMangledNames }, () => {
             const fakeUnmangledName = generateId()
