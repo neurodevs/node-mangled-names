@@ -42,7 +42,7 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         // @ts-ignore
         MangledNameExtractorImpl.execPromise = async (cmd: string) => {
             passedCmd = cmd
-            return this.generateFakeExecReponse()
+            return { stdout: this.mangledName }
         }
 
         await this.extract()
@@ -66,8 +66,7 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
 
     @test()
     protected static async returnsExpectedResultWithOneMangledName() {
-        const fakeStdout = this.generateFakeStdoutByNames(this.unmangledNames)
-        this.setFakeExecPromise({ stdout: fakeStdout })
+        const fakeStdout = this.fakeStdoutAndSetFakeExecPromise()
 
         const result = await this.extract()
         assert.isEqualDeep(result, { [this.unmangledName]: fakeStdout })
@@ -119,6 +118,43 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         const result = await this.extract()
 
         assert.isEqualDeep(result, { [this.unmangledName]: this.mangledName })
+    }
+
+    @test()
+    protected static async throwsIfMoreThanOneNameMatches() {
+        const matchingName1 = this.mangledName
+        const matchingName2 = `${this.mangledName}-2`
+
+        const fakeStdout = `${matchingName1}\n${matchingName2}`
+        this.setFakeExecPromise({ stdout: fakeStdout })
+
+        const err = await assert.doesThrowAsync(async () => {
+            await this.extract()
+        })
+
+        errorAssert.assertError(err, 'TOO_MANY_MATCHES', {
+            unmangledName: this.unmangledName,
+            matchingNames: [matchingName1, matchingName2],
+        })
+    }
+
+    @test()
+    protected static async throwsIfNoNameMatches() {
+        this.setFakeExecPromise()
+
+        const err = await assert.doesThrowAsync(
+            async () => await this.extract()
+        )
+
+        errorAssert.assertError(err, 'NO_MATCHES_FOUND', {
+            unmangledName: this.unmangledName,
+        })
+    }
+
+    private static fakeStdoutAndSetFakeExecPromise() {
+        const fakeStdout = this.generateFakeStdoutByNames(this.unmangledNames)
+        this.setFakeExecPromise({ stdout: fakeStdout })
+        return fakeStdout
     }
 
     private static generateNumFakeStdout(numMangledNames = 1) {

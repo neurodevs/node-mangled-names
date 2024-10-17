@@ -10,6 +10,15 @@ export default class SpruceError extends BaseSpruceError<ErrorOptions> {
             case 'LOAD_SYMBOLS_FAILED':
                 message = `Failed to load symbols from library: ${options.libPath}`
                 break
+
+            case 'TOO_MANY_MATCHES':
+                message = `Too many matching functions found for "${options.unmangledName}"! Matches: ${options.matchingNames.join(', ')}`
+                break
+
+            case 'NO_MATCHES_FOUND':
+                message = `No matching functions found for "${options.unmangledName}!`
+                break
+
             default:
                 message = super.friendlyMessage()
         }

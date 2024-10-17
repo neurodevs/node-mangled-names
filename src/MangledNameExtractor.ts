@@ -35,14 +35,34 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         const map: MangledNameMap = {}
 
         for (const unmangledName of this.unmangledNames) {
+            const matchingLines: string[] = []
+
             for (const line of lines) {
                 if (line.includes(unmangledName)) {
-                    const symbolEntries = line.split(' ')
-
-                    if (symbolEntries.length > 0) {
-                        map[unmangledName] = symbolEntries.pop() as string
-                    }
+                    matchingLines.push(line)
                 }
+            }
+
+            if (matchingLines.length > 1) {
+                throw new SpruceError({
+                    code: 'TOO_MANY_MATCHES',
+                    unmangledName,
+                    matchingNames: matchingLines,
+                })
+            }
+
+            if (matchingLines.length === 0) {
+                throw new SpruceError({
+                    code: 'NO_MATCHES_FOUND',
+                    unmangledName,
+                })
+            }
+
+            const match = matchingLines[0]
+            const symbolEntries = match.split(' ')
+
+            if (symbolEntries.length > 0) {
+                map[unmangledName] = symbolEntries.pop() as string
             }
         }
 
