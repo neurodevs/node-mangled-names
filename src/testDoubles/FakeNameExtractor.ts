@@ -1,15 +1,12 @@
-import {
-    MangledNameExtractor,
-    MangledNameMap,
-} from '../modules/MangledNameExtractor'
+import { NameExtractor, MangledNameMap } from '../modules/MangledNameExtractor'
 
-export default class FakeMangledNameExtractor implements MangledNameExtractor {
+export default class FakeNameExtractor implements NameExtractor {
     public static numConstructorCalls = 0
     public static extractCalls: FakeExtractCall[] = []
     public static fakeResult: MangledNameMap = {}
 
     public constructor() {
-        FakeMangledNameExtractor.numConstructorCalls++
+        FakeNameExtractor.numConstructorCalls++
     }
 
     public async extract(libPath: string, unmangledNames: string[]) {
@@ -21,17 +18,17 @@ export default class FakeMangledNameExtractor implements MangledNameExtractor {
     }
 
     private get extractCalls() {
-        return FakeMangledNameExtractor.extractCalls
+        return FakeNameExtractor.extractCalls
     }
 
     private get fakeResult() {
-        return FakeMangledNameExtractor.fakeResult
+        return FakeNameExtractor.fakeResult
     }
 
     public static clearTestDouble() {
-        FakeMangledNameExtractor.fakeResult = {}
-        FakeMangledNameExtractor.extractCalls = []
-        FakeMangledNameExtractor.numConstructorCalls = 0
+        FakeNameExtractor.fakeResult = {}
+        FakeNameExtractor.extractCalls = []
+        FakeNameExtractor.numConstructorCalls = 0
     }
 }
 

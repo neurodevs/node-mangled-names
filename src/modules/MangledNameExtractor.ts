@@ -1,8 +1,8 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
-export default class MangledNameExtractorImpl implements MangledNameExtractor {
-    public static Class?: MangledNameExtractorConstructor
+export default class MangledNameExtractor implements NameExtractor {
+    public static Class?: NameExtractorConstructor
     public static execPromise = promisify(exec)
 
     private libPath!: string
@@ -74,19 +74,14 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
     }
 
     private get execPromise() {
-        return MangledNameExtractorImpl.execPromise
+        return MangledNameExtractor.execPromise
     }
 }
 
-export interface MangledNameExtractor {
+export interface NameExtractor {
     extract(libPath: string, unmangledNames: string[]): Promise<MangledNameMap>
 }
 
-export type MangledNameExtractorConstructor = new () => MangledNameExtractor
+export type NameExtractorConstructor = new () => NameExtractor
 
 export type MangledNameMap = Record<string, string>
-
-export interface PromisifyResult {
-    stdout: string
-    stderr: string
-}

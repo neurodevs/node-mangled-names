@@ -3,13 +3,12 @@ import AbstractSpruceTest, {
     assert,
     generateId,
 } from '@sprucelabs/test-utils'
-import MangledNameExtractorImpl, {
-    MangledNameExtractor,
-    PromisifyResult,
+import MangledNameExtractor, {
+    NameExtractor,
 } from '../modules/MangledNameExtractor'
 
 export default class MangledNameExtractorTest extends AbstractSpruceTest {
-    private static instance: MangledNameExtractor
+    private static instance: NameExtractor
     private static _mangledName?: string
 
     protected static async beforeEach() {
@@ -27,7 +26,7 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
         let passedCmd = ''
 
         // @ts-ignore
-        MangledNameExtractorImpl.execPromise = async (cmd: string) => {
+        MangledNameExtractor.execPromise = async (cmd: string) => {
             passedCmd = cmd
             return { stdout: this.mangledName }
         }
@@ -165,7 +164,7 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
 
     private static setFakeExecPromise(options?: Partial<PromisifyResult>) {
         // @ts-ignore
-        MangledNameExtractorImpl.execPromise = async () => {
+        MangledNameExtractor.execPromise = async () => {
             return this.generateFakeExecReponse(options)
         }
     }
@@ -199,6 +198,11 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
     private static readonly unmangledNames = [generateId()]
 
     private static MangledNameExtractor() {
-        return MangledNameExtractorImpl.Create()
+        return MangledNameExtractor.Create()
     }
+}
+
+interface PromisifyResult {
+    stdout: string
+    stderr: string
 }

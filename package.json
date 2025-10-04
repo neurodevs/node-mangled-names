@@ -1,6 +1,6 @@
 {
   "name": "@neurodevs/node-mangled-names",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "Extract and resolve mangled names from dynamic libraries.",
   "main": "build/index.js",
   "repository": "https://github.com/neurodevs/node-mangled-names.git",
