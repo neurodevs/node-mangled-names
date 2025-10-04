@@ -1,13 +1,12 @@
 import AbstractSpruceTest, {
     test,
     assert,
-    errorAssert,
     generateId,
 } from '@sprucelabs/test-utils'
 import MangledNameExtractorImpl, {
     MangledNameExtractor,
     PromisifyResult,
-} from '../../MangledNameExtractor'
+} from '../modules/MangledNameExtractor'
 
 export default class MangledNameExtractorTest extends AbstractSpruceTest {
     private static instance: MangledNameExtractor
@@ -21,18 +20,6 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
     @test()
     protected static async canCreateMangledNameExtractor() {
         assert.isTruthy(this.instance, 'Should create an instance!')
-    }
-
-    @test()
-    protected static async throwsWithMissingRequiredParams() {
-        const err = await assert.doesThrowAsync(async () => {
-            // @ts-ignore
-            await this.instance.extract()
-        })
-
-        errorAssert.assertError(err, 'MISSING_PARAMETERS', {
-            parameters: ['libPath', 'unmangledNames'],
-        })
     }
 
     @test()
@@ -58,10 +45,11 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
             await this.extract()
         })
 
-        errorAssert.assertError(err, 'LOAD_SYMBOLS_FAILED', {
-            libPath: this.libPath,
-            originalError: fakeError,
-        })
+        assert.isEqual(
+            err.message,
+            `Failed to load symbols from library: ${this.libPath}!\n\n${fakeError}\n\n`,
+            'Did not receive the expected error!'
+        )
     }
 
     @test()
@@ -132,10 +120,11 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
             await this.extract()
         })
 
-        errorAssert.assertError(err, 'TOO_MANY_MATCHES', {
-            unmangledName: this.unmangledName,
-            matchingNames: [matchingName1, matchingName2],
-        })
+        assert.isEqual(
+            err.message,
+            `Too many matching functions found for "${this.unmangledName}"! Matches: ${matchingName1}, ${matchingName2}`,
+            'Did not receive the expected error!'
+        )
     }
 
     @test()
@@ -146,9 +135,11 @@ export default class MangledNameExtractorTest extends AbstractSpruceTest {
             async () => await this.extract()
         )
 
-        errorAssert.assertError(err, 'NO_MATCHES_FOUND', {
-            unmangledName: this.unmangledName,
-        })
+        assert.isEqual(
+            err.message,
+            `No matching functions found for "${this.unmangledName}!`,
+            'Did not receive the expected error!'
+        )
     }
 
     private static fakeStdoutAndSetFakeExecPromise() {

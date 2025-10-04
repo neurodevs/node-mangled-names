@@ -1,7 +1,5 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
-import { assertOptions } from '@sprucelabs/schema'
-import SpruceError from './errors/SpruceError'
 
 export default class MangledNameExtractorImpl implements MangledNameExtractor {
     public static Class?: MangledNameExtractorConstructor
@@ -17,11 +15,6 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
     }
 
     public async extract(libPath: string, unmangledNames: string[]) {
-        assertOptions({ libPath, unmangledNames }, [
-            'libPath',
-            'unmangledNames',
-        ])
-
         this.libPath = libPath
         this.unmangledNames = unmangledNames
 
@@ -44,18 +37,15 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
             }
 
             if (matchingLines.length > 1) {
-                throw new SpruceError({
-                    code: 'TOO_MANY_MATCHES',
-                    unmangledName,
-                    matchingNames: matchingLines,
-                })
+                throw new Error(
+                    `Too many matching functions found for "${unmangledName}"! Matches: ${matchingLines.join(', ')}`
+                )
             }
 
             if (matchingLines.length === 0) {
-                throw new SpruceError({
-                    code: 'NO_MATCHES_FOUND',
-                    unmangledName,
-                })
+                throw new Error(
+                    `No matching functions found for "${unmangledName}!`
+                )
             }
 
             const match = matchingLines[0]
@@ -75,11 +65,9 @@ export default class MangledNameExtractorImpl implements MangledNameExtractor {
         )
 
         if (stderr) {
-            throw new SpruceError({
-                code: 'LOAD_SYMBOLS_FAILED',
-                libPath: this.libPath,
-                originalError: stderr as unknown as Error,
-            })
+            throw new Error(
+                `Failed to load symbols from library: ${this.libPath}!\n\n${stderr}\n\n`
+            )
         }
 
         return stdout
