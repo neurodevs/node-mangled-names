@@ -1,3 +1,5 @@
+// NameExtractor
+
 export { default as MangledNameExtractor } from './impl/MangledNameExtractor'
 export * from './impl/MangledNameExtractor'
 
