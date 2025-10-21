@@ -1,4 +1,4 @@
-import MangledNameExtractor from '../modules/MangledNameExtractor'
+import MangledNameExtractor from '../impl/MangledNameExtractor'
 
 async function run() {
     const instance = MangledNameExtractor.Create()

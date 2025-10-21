@@ -1,4 +1,4 @@
-import { NameExtractor, MangledNameMap } from '../modules/MangledNameExtractor'
+import { NameExtractor, MangledNameMap } from '../impl/MangledNameExtractor'
 
 export default class FakeNameExtractor implements NameExtractor {
     public static numConstructorCalls = 0

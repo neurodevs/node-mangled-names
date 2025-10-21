@@ -2,7 +2,7 @@ import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
 import generateId from '@neurodevs/generate-id'
 import MangledNameExtractor, {
     NameExtractor,
-} from '../modules/MangledNameExtractor'
+} from '../../impl/MangledNameExtractor'
 
 export default class MangledNameExtractorTest extends AbstractSpruceTest {
     private static instance: NameExtractor
