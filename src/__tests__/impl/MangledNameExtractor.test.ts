@@ -1,10 +1,11 @@
-import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
 import generateId from '@neurodevs/generate-id'
+import AbstractModuleTest, { test, assert } from '@neurodevs/node-tdd'
+
 import MangledNameExtractor, {
     NameExtractor,
-} from '../../impl/MangledNameExtractor'
+} from '../../impl/MangledNameExtractor.js'
 
-export default class MangledNameExtractorTest extends AbstractSpruceTest {
+export default class MangledNameExtractorTest extends AbstractModuleTest {
     private static instance: NameExtractor
     private static _mangledName?: string
 
