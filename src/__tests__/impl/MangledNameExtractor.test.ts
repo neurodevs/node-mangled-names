@@ -1,11 +1,12 @@
 import generateId from '@neurodevs/generate-id'
-import AbstractModuleTest, { test, assert } from '@neurodevs/node-tdd'
+import { test, assert } from '@neurodevs/node-tdd'
 
 import MangledNameExtractor, {
     NameExtractor,
 } from '../../impl/MangledNameExtractor.js'
+import AbstractPackageTest from '../AbstractPackageTest.js'
 
-export default class MangledNameExtractorTest extends AbstractModuleTest {
+export default class MangledNameExtractorTest extends AbstractPackageTest {
     private static instance: NameExtractor
     private static _mangledName?: string
 
